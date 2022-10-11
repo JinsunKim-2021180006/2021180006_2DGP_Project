@@ -17,7 +17,7 @@ CANVAS_WIDTH, CANVAS_HEIGHT = 1920, 1080 #화면 사이즈
 def handle_events():
     global moving
     global x,y
-    global ground
+    global ground, direction, spriteNum, thisSprite
     global mainDirX, mainDirY
 
     events = get_events()
@@ -27,19 +27,27 @@ def handle_events():
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_RIGHT:
                 mainDirX +=1
+                direction = 4
+                spriteNum = 9
             elif event.key == SDLK_LEFT:
                 mainDirX -= 1
+                direction = 3
+                spriteNum = 9
             elif event.key == SDLK_SPACE:
                 mainDirY += 2
             elif event.key == SDLK_ESCAPE:
                 moving = False
-        # elif event.type == SDL_KEYUP:
-        #     if event.key == SDLK_RIGHT:
-        #         mainDirX -=1
-        #     elif event.key == SDLK_LEFT:
-        #         mainDirX += 1
-        #     elif event.key == SDLK_SPACE:
-        #         mainDirY -= 2
+        elif event.type == SDL_KEYUP:
+            if event.key == SDLK_RIGHT:
+                mainDirX -=1
+                direction = 4
+                spriteNum = 1
+            elif event.key == SDLK_LEFT:
+                mainDirX += 1
+                direction = 3
+                spriteNum = 1
+            elif event.key == SDLK_SPACE:
+                mainDirY -= 2
 
     pass
 
@@ -47,24 +55,25 @@ def handle_events():
 open_canvas(CANVAS_WIDTH,CANVAS_HEIGHT)
 
 BG_Arena = load_image('Colosseum_Arena.png')
-character = load_image('knight_resource1.webp')
+character = load_image('knight_resource2.png')
 
 moving = True
-ground = 190 # 바닥 위치
+ground = 175 # 바닥 위치
 x,y = CANVAS_WIDTH//2, ground
 main_frame = 0
 mainDirX, mainDirY = 0,0
-direction = 0
+direction = 4
+spriteNum = 1
 
 hide_cursor()
 
 while moving:
     clear_canvas()
     BG_Arena.draw(CANVAS_WIDTH//2,CANVAS_HEIGHT//2)
-    character.clip_draw(main_frame*79,78*6,79,78,x,y,90,90)
+    character.clip_draw(main_frame*80,100*direction,80,100,x,y,90,110)
     update_canvas()
     handle_events()
-    main_frame = (main_frame+1)%6 +6
+    main_frame = (main_frame+1) % spriteNum
     x += mainDirX*6
     y += mainDirY*10
     delay(0.03)
