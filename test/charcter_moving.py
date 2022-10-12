@@ -1,11 +1,8 @@
-#2022-10-11
+#2022-10-12
 #수정&추가해야하는 사항들은 주석으로 표시
 #배경 띄우기, 캐릭터 이동 모션 확인용
-# 캐릭터 사이즈 79*78
+# 캐릭터 사이즈 80*100
 
-
-########## 수정해야하는 부분 #########
-# frame = (frame+1)%변수(출력하는 스프라이트 수) + 변수(스프라이트에서 출력하는 라인)
 
 
 from pickle import FALSE
@@ -17,8 +14,10 @@ CANVAS_WIDTH, CANVAS_HEIGHT = 1920, 1080 #화면 사이즈
 def handle_events():
     global moving
     global x,y
-    global ground, direction, spriteNum, thisSprite
+    global ground, direction, spriteNum
     global mainDirX, mainDirY
+
+    global BossDir, BossSprNum
 
     events = get_events()
     for event in events:
@@ -56,14 +55,28 @@ open_canvas(CANVAS_WIDTH,CANVAS_HEIGHT)
 
 BG_Arena = load_image('Colosseum_Arena.png')
 character = load_image('knight_resource2.png')
+Boss1 = load_image('Boss1_resource.png')
 
 moving = True
 ground = 175 # 바닥 위치
 x,y = CANVAS_WIDTH//2, ground
 main_frame = 0
 mainDirX, mainDirY = 0,0
+
+# 4 = 오른쪽 달리기 
+# 3 = 왼쪽 달리기
+# 1,2 = 공격
+# 0 = 점프모션
 direction = 4
+# 출력할 스프라이트 개수
 spriteNum = 1
+
+#========================================
+BossDir = 1
+BossSprNum = 6
+Boss_frame = 0
+
+BossX,BossY = 500,ground+300
 
 hide_cursor()
 
@@ -71,9 +84,11 @@ while moving:
     clear_canvas()
     BG_Arena.draw(CANVAS_WIDTH//2,CANVAS_HEIGHT//2)
     character.clip_draw(main_frame*80,100*direction,80,100,x,y,90,110)
+    Boss1.clip_draw(Boss_frame*500,500*BossDir,500,500,BossX,BossY,300,300)
     update_canvas()
     handle_events()
     main_frame = (main_frame+1) % spriteNum
+    Boss_frame = (Boss_frame+1) % BossSprNum
     x += mainDirX*6
     y += mainDirY*10
     delay(0.03)
