@@ -26,7 +26,6 @@ def draw():
     update_canvas()
 
 def update():
-    game_framework.change_state(character_move)
     pass
 
 def pause():
