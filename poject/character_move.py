@@ -4,25 +4,28 @@ import loby_state
 import start_state
 
 frame = 0
-spriteDir = 1
 spriteNum = 1
-DirX, DirY = 0,0
+DirX, DirY = 0, 0
 
 class Knight:
     def __init__(self):
-        self.x,self.y = 1270//2, 175
+        self.x,self.y = 0, 110
         self.frame = 0
         self.dir = 1
         self.image = load_image('knight_resource2.png')
     
     def update(self):
         self.frame = (self.frame+1) % spriteNum
-        self.x += DirX*3
+        self.x += DirX*5
         self.y += DirY*5
+        if self.x > 720:
+            self.x = 720
+        if self.x<0:
+            self.x = 0
         delay(0.01)
 
     def draw(self):
-        self.image.clip_draw(self.frame*80,100*spriteDir,80,100,self.x,self.y,80,100)
+        self.image.clip_draw(self.frame*80,100*self.dir,80,100,self.x,self.y,80,100)
         
         
 knight = None
@@ -38,7 +41,7 @@ def exit():
     pass
 
 def handle_events():
-    global spriteDir, spriteNum
+    global spriteNum
     global DirX,DirY
     events = get_events()
     
@@ -48,11 +51,11 @@ def handle_events():
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_RIGHT:
                 DirX +=1
-                spriteDir = 4
+                knight.dir = 4
                 spriteNum = 9
             elif event.key == SDLK_LEFT:
                 DirX -= 1
-                spriteDir = 3
+                knight.dir = 3
                 spriteNum = 9
             elif event.key == SDLK_SPACE:
                 DirY += 2
@@ -61,13 +64,16 @@ def handle_events():
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 DirX -=1
-                spriteDir = 4
+                knight.dir = 4
                 spriteNum = 1
             elif event.key == SDLK_LEFT:
                 DirX += 1
-                spriteDir = 3
+                knight.dir = 3
                 spriteNum = 1
-
+            elif event.key == SDLK_SPACE:
+                DirY -= 2
+            
+            
     pass
 
 def draw():
@@ -91,3 +97,14 @@ def resume():
 
 
 
+#단독 실행 코드
+def test_self():
+    import sys
+    this_module = sys.modules['__main__']
+
+    pico2d.open_canvas(1270,720)
+    game_framework.run(this_module)
+    pico2d.close_canvas()
+
+if __name__ == '__main__': #만약 단독 실행 상태이면
+    test_self()
