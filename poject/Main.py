@@ -4,8 +4,10 @@ import game_framework
 import loby_state
 import arena_state
 import character_move
+import intro_state
 
 state = [
+    intro_state,
     loby_state,
     arena_state,
     character_move

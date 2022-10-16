@@ -1,20 +1,19 @@
-#로비
+#스타팅 페이지
 
 from pico2d import *
+import character_move
 import game_framework
-import start_state
 
-
-loby_image = None
+stating_image = None
 
 def enter():
-    global loby_image
-    loby_image = load_image('Colosseum_Lobby.png')
+    global starting_image
+    starting_image = load_image('Colosseum_of_Fools_Trophy.png')
     pass
 
 def exit():
-    global loby_image
-    del loby_image
+    global starting_image
+    del starting_image
     pass
 
 def handle_events():
@@ -22,14 +21,16 @@ def handle_events():
 
     for event in events:
         if event.type == SDL_KEYDOWN:
+            if event.key == SDLK_SPACE:
+                game_framework.change_state(character_move)
             if event.key == SDLK_ESCAPE:
-                game_framework.change_state(start_state)
+                game_framework.quit()
         
     pass
 
 def draw():
     clear_canvas()
-    loby_image.draw(1270//2,720//2)
+    starting_image.draw(1270//2,720//2)
     update_canvas()
 
 def update():
@@ -40,9 +41,3 @@ def pause():
 
 def resume():
     pass
-
-
-
-
-
-

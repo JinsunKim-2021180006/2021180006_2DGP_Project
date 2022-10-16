@@ -1,5 +1,7 @@
 from pico2d import *
 import game_framework
+import loby_state
+import start_state
 
 frame = 0
 spriteDir = 1
@@ -10,6 +12,7 @@ class Knight:
     def __init__(self):
         self.x,self.y = 1270//2, 175
         self.frame = 0
+        self.dir = 1
         self.image = load_image('knight_resource2.png')
     
     def update(self):
@@ -54,7 +57,7 @@ def handle_events():
             elif event.key == SDLK_SPACE:
                 DirY += 2
             elif event.key == SDLK_ESCAPE:
-               game_framework.quit()
+               game_framework.change_state(start_state)
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 DirX -=1
@@ -64,13 +67,13 @@ def handle_events():
                 DirX += 1
                 spriteDir = 3
                 spriteNum = 1
-            elif event.key == SDLK_SPACE:
-                DirY -= 2
 
     pass
 
 def draw():
     clear_canvas()
+    loby_state.enter()
+    loby_state.draw()
     knight.draw()
     update_canvas()
 
