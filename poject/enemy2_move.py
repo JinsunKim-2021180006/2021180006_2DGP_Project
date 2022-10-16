@@ -5,17 +5,18 @@ import random
 
 frame = 0
 spriteNum = 1
-DirX, DirY = 1,1
-move_X, move_Y = 10,10
+move_X, move_Y = 3,2
+        
 
 class Enemy2:
     def __init__(self):
-        self.x,self.y = random.randint(100,1190),random.randint(110,620)
+        self.x,self.y = random.randint(100,1190),random.randint(120,620)
         self.frame = 0
         self.dir = 3
         self.image = load_image('enemy2_resource.png')
     
     def update(self):
+        global move_X,move_Y
         self.frame = (self.frame+1) % spriteNum
         
         if self.x>1270:
@@ -25,13 +26,16 @@ class Enemy2:
         elif self.x<0:
             self.dir = 1
             self.x = 0  
-            move_X = -move_X    
+            move_X = -move_X
+        
         if self.y>720:
             self.y = 720
-            move_Y = -move_Y    
+            move_Y = -move_Y
         elif self.y<110:
             self.y = 110
-            move_Y = -move_Y    
+            move_Y = -move_Y
+            
+             
 
         self.x += move_X
         self.y += move_Y
@@ -58,6 +62,13 @@ def exit():
     pass
 
 def handle_events():
+
+    events = get_events()
+
+    for event in events:
+        if event.type == SDL_KEYDOWN:
+            if event.key == SDLK_ESCAPE:
+                game_framework.pop_state()
     pass
 
 def draw():

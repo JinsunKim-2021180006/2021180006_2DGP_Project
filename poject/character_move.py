@@ -2,6 +2,7 @@ from pico2d import *
 import game_framework
 import loby_state
 import start_state
+import enemy2_move
 
 frame = 0
 spriteNum = 1
@@ -29,6 +30,7 @@ class Knight:
         
         
 knight = None
+enemy2_chk = 0
 
 def enter():
     global knight
@@ -41,7 +43,7 @@ def exit():
     pass
 
 def handle_events():
-    global spriteNum
+    global spriteNum, enemy2_chk
     global DirX,DirY
     events = get_events()
     
@@ -61,6 +63,11 @@ def handle_events():
                 DirY += 2
             elif event.key == SDLK_ESCAPE:
                game_framework.change_state(start_state)
+            
+            #적 소환 명령어
+            elif event.key == SDLK_e:
+                game_framework.push_state(enemy2_move)
+
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 DirX -=1
