@@ -42,7 +42,6 @@ class Knight:
     def draw(self):
         self.image.clip_draw(self.frame*80,100*self.dir,80,100,self.x,self.y,80,100)
     
-    def attack(self):      
         
 knight = None
 enemy2_chk = 0
@@ -84,10 +83,6 @@ def handle_events():
                     DirX += 5
                 elif knight.dir == 3:
                     DirX -= 5
-            elif event.key == SDLK_d:
-                #공격키 - d
-                
-
             elif event.key == SDLK_ESCAPE:
                game_framework.change_state(start_state)
             
