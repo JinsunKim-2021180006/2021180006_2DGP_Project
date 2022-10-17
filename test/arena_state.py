@@ -6,7 +6,7 @@ arena_image = None
 
 def enter():
     global arena_image
-    arena_image = load_image('resource\\background_image_sprites\\Colosseum_Arena.png')
+    arena_image = load_image('Colosseum_Arena.png')
     pass
 
 def exit():

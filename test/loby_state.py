@@ -8,7 +8,7 @@ loby_image = None
 
 def enter():
     global loby_image
-    loby_image = load_image('resource\\background_image_sprites\\Colosseum_Lobby.png')
+    loby_image = load_image('Colosseum_Lobby.png')
     pass
 
 def exit():

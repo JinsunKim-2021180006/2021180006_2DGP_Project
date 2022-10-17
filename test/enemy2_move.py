@@ -13,7 +13,7 @@ class Enemy2:
         self.x,self.y = random.randint(100,1190),random.randint(120,620)
         self.frame = 0
         self.dir = 3
-        self.image = load_image('resource\\character_image_sprites\\enemy2_resource.png')
+        self.image = load_image('enemy2_resource.png')
     
     def update(self):
         global move_X,move_Y

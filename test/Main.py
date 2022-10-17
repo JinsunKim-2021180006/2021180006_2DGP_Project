@@ -1,6 +1,6 @@
 import pico2d
-import game_framework
 
+import game_framework
 import loby_state
 import arena_state
 import character_move

@@ -8,7 +8,7 @@ stating_image = None
 
 def enter():
     global starting_image
-    starting_image = load_image('resource\\background_image_sprites\\Colosseum_of_Fools_Trophy.png')
+    starting_image = load_image('Colosseum_of_Fools_Trophy.png')
     pass
 
 def exit():

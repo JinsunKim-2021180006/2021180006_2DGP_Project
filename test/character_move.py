@@ -13,7 +13,7 @@ class Knight:
         self.x,self.y = 0, 110
         self.frame = 0
         self.dir = 1
-        self.image = load_image('resource\\character_image_sprites\\knight_resource2.png')
+        self.image = load_image('knight_resource2.png')
     
     def update(self):
         self.frame = (self.frame+1) % spriteNum
