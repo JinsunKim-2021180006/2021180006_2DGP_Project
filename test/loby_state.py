@@ -3,13 +3,16 @@ from pico2d import *
 import game_framework
 import character_move
 import arena_state
+import enemy2_move
 
 loby_image = None
 DirX,DirY=0,0
+enemy2_num = 0
 
 def enter():
-    global loby_image,knight
-    knight = character_move.Knight(10,110)
+    global loby_image,knight,enemy2_num,enemy2
+    knight = character_move.Knight(1250,110)
+    
     loby_image = load_image('resource\\background_image_sprites\\Colosseum_Lobby.png')
     
     pass
@@ -42,7 +45,7 @@ def handle_events():
                     DirX+=3
                 elif knight.dir == 3:
                     DirX-=3
-
+            
 
 
         elif event.type == SDL_KEYUP:
@@ -59,21 +62,23 @@ def handle_events():
                     DirX-=3
                 elif knight.dir == 3:
                     DirX+=3
+            elif event.key == SDLK_e:
+                enemy2_num+=1
 
-
-    del events
     pass
 
 def draw():
     clear_canvas()
+    enemy2 = [enemy2_move.Enemy2()for i in range(0,enemy2_num)]
     loby_image.draw(1270//2,720//2)
     knight.draw()
+    enemy2.draw()
     update_canvas()
 
 def update():
     global DirX,DirY
     knight.update(DirX,DirY)
-
+    enemy2.update()
     if knight.x>=1270:
         game_framework.change_state(arena_state)
 

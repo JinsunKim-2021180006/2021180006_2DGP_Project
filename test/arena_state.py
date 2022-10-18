@@ -8,7 +8,7 @@ DirX,DirY=0,0
 
 def enter():
     global image,knight
-    knight = character_move.Knight(10,110)
+    knight = character_move.Knight(20,110)
     image = load_image('resource\\background_image_sprites\\Colosseum_Arena.png')
     
     pass
@@ -59,8 +59,6 @@ def handle_events():
                 elif knight.dir == 3:
                     DirX+=3
 
-
-    del events
     pass
 
 def draw():
@@ -71,9 +69,11 @@ def draw():
 
 def update():
     global DirX,DirY,knight
-    knight.update(DirX,DirY)    
-    if knight.x<=0:
-        game_framework.change_state(loby_state)
+
+    knight.update(DirX,DirY)
+
+    # if knight.x<=0:
+        # game_framework.change_state(loby_state)
     pass
 
 def pause():

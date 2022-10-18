@@ -6,6 +6,8 @@ import start_state
 import loby_state
 import arena_state
 
+state_chk = 0
+
 state = [
     intro_state,
     start_state,
@@ -15,5 +17,5 @@ state = [
 
 
 pico2d.open_canvas(1270,720)
-game_framework.run(state[2])
+game_framework.run(state[3])
 pico2d.close_canvas()
