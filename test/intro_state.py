@@ -11,7 +11,7 @@ logo_time = 0.01
 def enter():
     global logo_image, logo_time
     logo_time = 0.01
-    logo_image = load_image('tuk_credit.png')
+    logo_image = load_image('resource\\background_image_sprites\\tuk_credit.png')
     pass
 
 def exit():
@@ -38,3 +38,16 @@ def draw():
 def handle_events():
     events = get_events()
     pass
+
+
+#단독 실행 코드
+def test_self():
+    import sys
+    this_module = sys.modules['__main__']
+
+    pico2d.open_canvas(1270,720)
+    game_framework.run(this_module)
+    pico2d.close_canvas()
+
+if __name__ == '__main__': #만약 단독 실행 상태이면
+    test_self()
