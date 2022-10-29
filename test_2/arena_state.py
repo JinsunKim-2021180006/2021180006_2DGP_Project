@@ -1,7 +1,6 @@
 from pico2d import *
 import game_framework
 import character_move
-import loby_state
 
 image = None
 DirX,DirY=0,0
