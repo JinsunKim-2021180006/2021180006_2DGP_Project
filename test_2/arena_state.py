@@ -70,9 +70,7 @@ def update():
     global DirX,DirY,knight
 
     knight.update(DirX,DirY)
-
-    # if knight.x<=0:
-        # game_framework.change_state(loby_state)
+    
     pass
 
 def pause():
