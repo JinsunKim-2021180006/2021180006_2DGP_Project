@@ -3,7 +3,7 @@ import game_framework
 from character_move import Knight
 
 image = None
-DirX,DirY=0,0
+
 
 def enter():
     global image, knight
@@ -19,7 +19,7 @@ def exit():
 
 
 def update():
-    knight.update(DirX,DirY)
+    knight.update()
     pass
 
 def draw_arena():
@@ -39,8 +39,6 @@ def resume():
     pass
 
 def handle_events():
-    global DirX,DirY
-
     events = get_events()
 
     for event in events:
@@ -50,42 +48,6 @@ def handle_events():
             game_framework.quit()
         else:
             knight.handle_event(event)
-
-
-    #     if event.type == SDL_KEYDOWN:
-    #         if event.key == SDLK_ESCAPE:
-    #             game_framework.quit()
-
-    #         elif event.key == SDLK_RIGHT:
-    #             DirX +=1
-    #             knight.dir = 4
-    #             character_move.spriteNum = 9
-    #         elif event.key == SDLK_LEFT:
-    #             DirX -= 1
-    #             knight.dir = 3
-    #             character_move.spriteNum = 9
-    #         elif event.key == SDLK_s:
-    #             if knight.dir == 4:
-    #                 DirX+=3
-    #             elif knight.dir == 3:
-    #                 DirX-=3
-
-
-
-    #     elif event.type == SDL_KEYUP:
-    #         if event.key == SDLK_RIGHT:
-    #             DirX -=1
-    #             knight.dir = 4
-    #             character_move.spriteNum = 1
-    #         elif event.key == SDLK_LEFT:
-    #             DirX += 1
-    #             knight.dir = 3
-    #             character_move.spriteNum = 1
-    #         elif event.key == SDLK_s:
-    #             if knight.dir == 4:
-    #                 DirX-=3
-    #             elif knight.dir == 3:
-    #                 DirX+=3
 
     pass
 
