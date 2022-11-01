@@ -1,13 +1,11 @@
 import pico2d
 import game_framework
 
-import loby_state
 import arena_state
 
 state_chk = 0
 
 state = [
-    loby_state,
     arena_state
     ]
 
