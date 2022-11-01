@@ -2,6 +2,9 @@ from pico2d import *
 import game_framework
 from character_move import Knight
 
+
+MAP_SIZE_width = 1270
+MAP_SIZE_height = 720
 image = None
 
 
@@ -23,7 +26,7 @@ def update():
     pass
 
 def draw_arena():
-    image.draw(1270//2,720//2)
+    image.draw(MAP_SIZE_width // 2,MAP_SIZE_height//2)
     knight.draw()
 
 def draw():

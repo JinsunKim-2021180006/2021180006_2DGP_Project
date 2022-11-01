@@ -2,22 +2,33 @@ from pico2d import *
 import game_framework
 import random
 
-frame = 0
-spriteNum = 1
-move_X, move_Y = 3,2
-enemy2_num = 1
+class Flying:
+    def enter(self):
+        print("ENTER ANMY_2 FLYING")
+
+    def exit(self):
+        print("EXIT ANMY_2 FLYING")
+    
+    def do(self):
+        self.frame = (self.frame + 1)%self.spriteNum
+        self.x += self.dir
+        self.y += self.dir
+        self.x = clamp(0,self.x,1270)
+        self.y = clamp(110,self.y,720)
+
+
 
 
 class Enemy2:
     def __init__(self):
         self.x,self.y = random.randint(100,1190),random.randint(120,620)
         self.frame = 0
-        self.dir = 3
+        self.dir = 1
+        self.face = 3
+        self.spriteNum = 1
         self.image = load_image('resource\\character_image_sprites\\enemy2_resource.png')
     
     def update(self):
-        global move_X,move_Y,enemy2_num
-        self.frame = (self.frame+1) % spriteNum
         
         if self.x>1270:
             self.dir = 3

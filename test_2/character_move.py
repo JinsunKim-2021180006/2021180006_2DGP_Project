@@ -14,14 +14,17 @@ class IDLE:
     @staticmethod
     def enter(self,event):
         self.dir = 0
-    
+
+    @staticmethod
     def exit(self):
         pass
 
+    @staticmethod
     def do(self):
         self.frame = (self.frame+1)%self.spriteNum
         pass
-
+    
+    @staticmethod
     def draw(self):
         self.image.clip_draw(self.frame*80,100*self.face,80,100,self.x,self.y,80,100)
 
@@ -73,7 +76,7 @@ class Knight:
         self.spriteNum = 1
         self.image = load_image('resource\\character_image_sprites\\knight_resource2.png')
     
-        self.event_que  = []
+        self.event_que = []
         self.cur_state = IDLE
         self.cur_state.enter(self, None)
 

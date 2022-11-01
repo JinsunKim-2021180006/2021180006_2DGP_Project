@@ -1,31 +1,39 @@
 from pico2d import *
 import game_framework
+from character_move import Knight
 
 
-arena_image = None
+MAP_SIZE_width = 1270
+MAP_SIZE_height = 720
+image = None
+
 
 def enter():
-    global arena_image
-    arena_image = load_image('resource\\background_image_sprites\\Colosseum_Arena.png')
+    global image, knight
+    knight = Knight()
+    image = load_image('resource\\background_image_sprites\\Colosseum_Arena.png')
+    
     pass
 
 def exit():
-    global arena_image
-    del arena_image
+    global image,knight
+    del image,knight
     pass
 
-def handle_events():
-    events = get_events()
-        
+
+def update():
+    knight.update()
     pass
+
+def draw_arena():
+    image.draw(MAP_SIZE_width // 2,MAP_SIZE_height//2)
+    knight.draw()
 
 def draw():
     clear_canvas()
-    arena_image.draw(1270//2,720//2)
+    draw_arena()
     update_canvas()
 
-def update():
-    pass
 
 def pause():
     pass
@@ -33,7 +41,16 @@ def pause():
 def resume():
     pass
 
+def handle_events():
+    events = get_events()
 
+    for event in events:
+        if event.type == SDL_QUIT:
+            game_framework.quit()
+        elif (event.type,event.key) == (SDL_KEYDOWN,SDLK_ESCAPE):
+            game_framework.quit()
+        else:
+            knight.handle_event(event)
 
-
+    pass
 

@@ -3,8 +3,6 @@ import game_framework
 
 import arena_state
 
-state_chk = 0
-
 state = [
     arena_state
     ]
