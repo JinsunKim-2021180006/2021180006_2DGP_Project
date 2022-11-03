@@ -1,32 +1,38 @@
 from pico2d import *
 import game_framework
+import game_world
+
 from character_move import Knight
+from arena import Arena
 
-MAP_SIZE_width = 1270
-MAP_SIZE_height = 720
-image = None
 
+bakcground = None
+knight = None
 
 def enter():
-    global image, knight
+    global knight, bakcground
     knight = Knight()
-    image = load_image('resource\\background_image_sprites\\Colosseum_Arena.png')
-    
+    bakcground = Arena()
+
+    game_world.add_obj(knight,1)
+    game_world.add_obj(bakcground,0)
+
     pass
 
 def exit():
-    global image,knight
-    del image,knight
+    game_world.clear()
     pass
 
 
 def update():
-    knight.update()
+    for game_obj in game_world.all_objs():
+        game_obj.update()
     pass
 
 def draw_arena():
-    image.draw(MAP_SIZE_width // 2,MAP_SIZE_height//2)
-    knight.draw()
+    for game_obj in game_world.all_objs():
+        game_obj.draw()
+
 
 def draw():
     clear_canvas()
