@@ -1,4 +1,5 @@
 from pico2d import *
+
 import random
 
 class IDLE:
@@ -12,7 +13,7 @@ class IDLE:
 
     @staticmethod
     def do(self):
-        self.frame = (self.frame+1)%self.spriteNum
+        self.frame = (self.frame+1)%1
         pass
     
     @staticmethod
@@ -54,24 +55,6 @@ class Enemy2:
 
     def update(self):
         self.cur_state.do(self)
-        
-        # if self.x>1270:
-        #     self.dir = 3
-        #     self.x = 1270
-        #     move_X = -move_X
-        # elif self.x<0:
-        #     self.dir = 1
-        #     self.x = 0  
-        #     move_X = -move_X
-            
-        # if self.y>720:
-        #     self.y = 720
-        #     move_Y = -move_Y
-        # elif self.y<110:
-        #     self.y = 110
-        #     move_Y = -move_Y
-        # self.x += move_X
-        # self.y += move_Y
 
     def draw(self):
         self.cur_state.draw(self)

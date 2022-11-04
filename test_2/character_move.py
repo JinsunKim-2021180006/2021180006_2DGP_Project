@@ -2,6 +2,9 @@ from pico2d import *
 
 RD,LD,RU,LU = range(4)
 
+event_name = ['RD', 'LD', 'RU', 'LU']
+
+
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RD,
     (SDL_KEYDOWN, SDLK_LEFT): LD,
@@ -21,7 +24,7 @@ class IDLE:
 
     @staticmethod
     def do(self):
-        self.frame = (self.frame+1)%self.spriteNum
+        self.frame = (self.frame+1)% 1
         pass
     
     @staticmethod
@@ -69,7 +72,7 @@ next_state = {
 
 class Knight:
     def __init__(self):
-        self.x,self.y = 10,100
+        self.x,self.y = 10,110
         self.frame = 0
         self.dir = 1 
         self.face = 1
@@ -86,11 +89,16 @@ class Knight:
         if self.event_que:
             event = self.event_que.pop()
             self.cur_state.exit(self)
-            self.cur_state = next_state[self.cur_state][event]
+            try:
+                self.cur_state = next_state [self.cur_state][event]
+            except KeyError:
+                print(f'ERROR:State {self.cur_state.__name__} Event {event_name[event]}')
+
             self.cur_state.enter(self,event)
 
     def draw(self):
         self.cur_state.draw(self)
+        
 
     def add_event(self,event):
         self.event_que.insert(0,event)
