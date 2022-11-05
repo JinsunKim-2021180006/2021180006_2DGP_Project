@@ -1,7 +1,7 @@
 #스타팅 페이지
 
 from pico2d import *
-import play_state
+import loby_state
 import game_framework
 
 stating_image = None
@@ -22,7 +22,7 @@ def handle_events():
     for event in events:
         if event.type == SDL_KEYDOWN:
             if event.key == SDLK_s:
-                game_framework.change_state(play_state)
+                game_framework.change_state(loby_state)
             if event.key == SDLK_ESCAPE:
                 game_framework.quit()
         
