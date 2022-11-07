@@ -1,8 +1,8 @@
 from pico2d import *
 
-RD,LD,RU,LU,JUMP_u,JUMP_d, Shift_d,Shift_u = range(8)
+RD,LD,RU,LU,JUMP_u,JUMP_d, Shift_d, Shift_u = range(8)
 
-event_name = ['RD', 'LD', 'RU', 'LU','JUMP_u','JUMP_d','DASH']
+event_name = ['RD', 'LD', 'RU', 'LU']
 
 
 key_event_table = {
@@ -55,6 +55,11 @@ class MOVING:
             self.dir +=1
             self.face = 3
             self.spriteNum = 1
+        
+        if event == Shift_d:
+            self.dir += 4
+        elif event == Shift_u:
+            self.dir -= 4
     
     def exit(self):
         print("EXIT MOV")
@@ -69,38 +74,10 @@ class MOVING:
     def draw(self):
         self.image.clip_draw(self.frame*80,100*self.face,80,100,self.x,self.y,80,100)
 
-class DASH:
-    def enter(self,event):
-        print("dash")
-        if event  ==  Shift_d:
-            if self.face == 4:
-                self.dir += 4
-            if self.face == 3:
-                self.dir -= 4
-    
-        elif event  ==  Shift_u:
-            if self.face == 4:
-                self.dir -= 4
-            if self.face == 3:
-                self.dir += 4
-
-    def exit(self):
-        print("exit dash")
-        pass
-
-    def do(self):
-        self.frame = (self.frame+1)%self.spriteNum
-        self.x += self.dir
-        self.x = clamp(0,self.x,1270)
-    
-    def draw(self):
-        self.image.clip_draw(self.frame*80,100*self.face,80,100,self.x,self.y,80,100)
-
 
 next_state = {
-    IDLE: {RD:MOVING,LD:MOVING,RU:MOVING,LU:MOVING,Shift_d:DASH},
-    MOVING: {RD:IDLE,LD:IDLE,RU:IDLE,LU:IDLE,Shift_d:DASH},
-    DASH :{RD:MOVING,LD:MOVING,RU:MOVING,LU:MOVING}
+    IDLE: {RD:MOVING,LD:MOVING,RU:MOVING,LU:MOVING, Shift_d:MOVING,Shift_u:MOVING},
+    MOVING: {RD:IDLE,LD:IDLE,RU:IDLE,LU:IDLE,Shift_d:IDLE,Shift_u:IDLE}
     # JUMP: {RD:MOVING,LD:MOVING,RU:MOVING,LU:MOVING}
 }
 
