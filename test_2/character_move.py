@@ -55,12 +55,7 @@ class MOVING:
             self.dir +=1
             self.face = 3
             self.spriteNum = 1
-        
-        if event == Shift_d:
-            self.dir += 4
-        elif event == Shift_u:
-            self.dir -= 4
-    
+            
     def exit(self):
         print("EXIT MOV")
         pass
@@ -75,10 +70,10 @@ class MOVING:
         self.image.clip_draw(self.frame*80,100*self.face,80,100,self.x,self.y,80,100)
 
 
+
 next_state = {
     IDLE: {RD:MOVING,LD:MOVING,RU:MOVING,LU:MOVING, Shift_d:MOVING,Shift_u:MOVING},
     MOVING: {RD:IDLE,LD:IDLE,RU:IDLE,LU:IDLE,Shift_d:IDLE,Shift_u:IDLE}
-    # JUMP: {RD:MOVING,LD:MOVING,RU:MOVING,LU:MOVING}
 }
 
 
@@ -90,7 +85,8 @@ class Knight:
         self.face = 1
         self.spriteNum = 1
         self.image = load_image('resource\\character_image_sprites\\knight_resource2.png')
-    
+
+
         self.event_que = []
         self.cur_state = IDLE
         self.cur_state.enter(self, None)
