@@ -1,11 +1,13 @@
 from pico2d import *
 import game_framework
 import game_world
+import loby_state
+import arenaOn_state
 
 RD, LD, RU, LU, SHIFT, SHIFT_U,\
-SPACE = range(7)
+SPACE, SPACE_U = range(8)
 
-event_name = ['RD', 'LD', 'RU', 'LU', 'SHIFT', 'SHIFT_U', 'SPACE']
+event_name = ['RD', 'LD', 'RU', 'LU', 'SHIFT', 'SHIFT_U', 'SPACE', 'SPACE_U']
 
 PIXEL_PER_METER = (10.0 / 0.4) # 10 pixel 30 cm
 RUN_SPEED_KMPH = 25.0 # Km / Hour
@@ -17,7 +19,7 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 9
 
-GRAVITY_MPS = -9.8
+GRAVITY_MPS = 9.8
 GRAVITY_PPS = (GRAVITY_MPS * PIXEL_PER_METER)
 
 key_event_table = {
@@ -29,7 +31,8 @@ key_event_table = {
     (SDL_KEYDOWN,SDLK_LSHIFT): SHIFT,
     (SDL_KEYUP,SDLK_LSHIFT): SHIFT_U,
 
-    (SDL_KEYDOWN,SDLK_SPACE):SPACE
+    (SDL_KEYDOWN,SDLK_SPACE):SPACE,
+    (SDL_KEYUP,SDLK_SPACE): SPACE_U
 }
 
 
@@ -39,18 +42,20 @@ class IDLE:
     def enter(self,event):
         print('ENTER IDLE')
         self.dir = 0
+        self.dir_y = -1
 
     @staticmethod
     def exit(self, event):
         print('EXIT IDLE')
 
-        if event == SPACE:
-            self.air_move = False
-
 
     @staticmethod
     def do(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 1
+
+        self.y += self.dir_y * GRAVITY_PPS * game_framework.frame_time
+        self.y = clamp(120,self.y,800)
+
 
 
     @staticmethod
@@ -64,6 +69,7 @@ class IDLE:
 class MOVING:
 
     def enter(self, event):
+        self.dir = 0
         print('ENTER RUN')
         if event == RD:
             self.dir += 1
@@ -75,18 +81,21 @@ class MOVING:
             self.dir += 1
 
                 
+        
     def exit(self, event):
         print('EXIT RUN')
         self.face_dir = self.dir
+        self.dir = 0
+
 
 
     def do(self):
         # print(f'{self.speed*self.dir*game_framework.frame_time}')
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 9
         self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time
-        self.y += GRAVITY_PPS * game_framework.frame_time
+        self.y += self.dir_y * GRAVITY_PPS * game_framework.frame_time
         self.x = clamp(0, self.x, 1270)
-        self.y = clamp(120, self.y, 150)
+        self.y = clamp(120,self.y,150)
 
     def draw(self):
         if self.dir == -1:
@@ -99,25 +108,32 @@ class JUMP:
     
     def enter(self, event):
         print('ENTER JUMP')
+        self.dir = 0
+        if event == SPACE:
+            self.dir_y += 2
+        elif event == SPACE_U:
+            self.dir_y -= 2
+
                 
     def exit(self, event):
         print('EXIT JUMP')
-        self.face_dir = self.dir
+        self.dir = 0
+
 
 
     def do(self):
-        # print(f'{self.speed*self.dir*game_framework.frame_time}')
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 9
         self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time
-        self.y -= GRAVITY_PPS * game_framework.frame_time
+        self.y += self.dir_y * GRAVITY_PPS * game_framework.frame_time
         self.x = clamp(0, self.x, 1270)
-        self.y = clamp(120, self.y, 300)
+        self.y = clamp(120,self.y,250)
+        pass
 
     def draw(self):
-        if self.dir == -1:
-            self.image.clip_composite_draw(int(self.frame)*80,100*4,80,100,0,'h',self.x,self.y,80,100)
-        elif self.dir == 1:
+        if self.face_dir == 1:
             self.image.clip_composite_draw(int(self.frame)*80,100*4,80,100,0,'',self.x,self.y,80,100)
+        else:
+            self.image.clip_composite_draw(int(self.frame)*80,100*4,80,100,0,'h',self.x,self.y,80,100)
 
    
 
@@ -127,21 +143,20 @@ class JUMP:
 next_state = {
     IDLE:  {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, SHIFT:MOVING,SHIFT_U:MOVING,SPACE:JUMP},
     MOVING:   {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE, SHIFT: IDLE,SHIFT_U: IDLE, SPACE:JUMP},
-    JUMP : {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, SHIFT:MOVING, SHIFT_U:MOVING,SPACE:JUMP}
+    JUMP : {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, SHIFT:MOVING, SHIFT_U:MOVING, SPACE:IDLE, SPACE_U:IDLE}
 }
 
 
 class Knight:
 
     def __init__(self):
-        self.x, self.y = 20, 120
+        self.x, self.y = 100, 120
         self.frame = 0
         self.dir, self.face_dir = 0, 1
-        
-        self.vel = 0
+        self.dir_y = 0
+
+        self.jumping = False
         self.timer = 0
-        self.jump = 0
-        self.air_move = False
 
         self.image = load_image('resource\\character_image_sprites\\knight_resource2.png')
 
@@ -163,7 +178,8 @@ class Knight:
 
     def draw(self):
         self.cur_state.draw(self)
-        draw_rectangle(*self.get_bb())
+        if loby_state.coliBox | arenaOn_state.coliBox:
+            draw_rectangle(*self.get_bb())
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -177,5 +193,8 @@ class Knight:
         return self.x - 20, self.y - 30, self.x + 20, self.y + 50
 
     def handle_collision(self, other, group):
-        print(' ')
-
+        if group == 'knight:ground':
+            if self.jumping:
+                self.jumping = False
+            else:
+                self.jumping = True

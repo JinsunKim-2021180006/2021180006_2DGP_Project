@@ -4,11 +4,13 @@ import game_framework
 import intro_state
 import start_state
 import loby_state
+import arenaOn_state
 
 state = [
     intro_state,
     start_state,
-    loby_state
+    loby_state,
+    arenaOn_state
     ]
 
 
