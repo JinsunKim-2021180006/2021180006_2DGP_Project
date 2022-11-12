@@ -6,7 +6,7 @@ import game_world
 
 from arena import Arena
 from Knight import Knight
-from enemy2 import Enemy2
+from enemy import Enemy2, Enemy1
 from Block import Block, Wall
 
 
@@ -14,6 +14,7 @@ MAP_SIZE_width = 1270
 MAP_SIZE_height = 720
 
 knight = None
+enemy1 = None
 enemy2 = None
 
 block = None
@@ -46,13 +47,15 @@ def enter():
     knight = Knight()
     game_world.add_obj(knight,1)
     
-    enemy2 = [Enemy2() for n in range(15)]
+    enemy2 = [Enemy2() for n in range(2)]
     game_world.add_objs(enemy2,1)
+    enemy1 = [Enemy1() for n in range(3)]
+    game_world.add_objs(enemy1,1)
 
     background_img = Arena(MAP_SIZE_width,MAP_SIZE_height)
     game_world.add_obj(background_img,0)
     
-    block = [Block(randint(200,1000),randint(300,600)) for n in range(10)]
+    block = [Block(randint(200,1000),randint(300,600)) for n in range(3)]
     wall = Wall(-5,1100)
     game_world.add_objs(block, 0)
     game_world.add_obj(wall, 0)
@@ -60,6 +63,10 @@ def enter():
     game_world.add_collision_group(knight,background_img,'knight:ground')
     game_world.add_collision_group(knight,block,'knight:ground')
 
+    game_world.add_collision_group(enemy2,background_img,'enemy2:ground')
+    game_world.add_collision_group(enemy2,block,'enemy2:ground')
+
+    game_world.add_collision_group(enemy1,knight,'enemy1:obj')
    
     pass
 
@@ -76,7 +83,6 @@ def update():
 
     for a,b, group in game_world.all_collision_pairs():
         if collide(a, b):
-            print('COLLID by ', group)
             a.handle_collision(b, group)
             b.handle_collision(a, group)
 
@@ -108,5 +114,4 @@ def pause():
 
 def resume():
     pass
-
 
