@@ -1,4 +1,6 @@
 from pico2d import *
+import loby_state
+import arenaOn_state
 
 class Arena:
     image = None
@@ -12,4 +14,10 @@ class Arena:
     
     def draw(self):
         self.image.draw(self.x//2,self.y//2)
-        
+        if loby_state.coliBox | arenaOn_state.coliBox:
+            draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        return 0 , 0, 1270-1, 100
+    def handle_collision(self, other, group):
+        pass
