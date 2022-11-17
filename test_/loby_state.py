@@ -86,9 +86,10 @@ def update():
             BG_state = 1
             background_img = Hall(MAP_SIZE_width,MAP_SIZE_height)
         game_world.add_obj(background_img,0)
-    elif knight.x >= 200:
+    elif knight.x >= 100:
         if BG_state == 2:
             #만약 아레나 안쪽으로 들어온다면 -> arenaOn_state
+            knight.dir = 0
             game_framework.change_state(arenaOn_state)
             pass
 
