@@ -6,9 +6,7 @@ import game_world
 
 from arena import Arena
 from Knight import Knight
-from enemy import Enemy2, Enemy1
 from Block import Block, Wall
-from GUI import HP
 
 
 MAP_SIZE_width = 1270
@@ -48,11 +46,6 @@ def enter():
     
     knight = Knight()
     game_world.add_obj(knight,1)
-    
-    enemy2 = [Enemy2() for n in range(2)]
-    game_world.add_objs(enemy2,1)
-    enemy1 = [Enemy1() for n in range(3)]
-    game_world.add_objs(enemy1,1)
 
     background_img = Arena(MAP_SIZE_width,MAP_SIZE_height)
     game_world.add_obj(background_img,0)

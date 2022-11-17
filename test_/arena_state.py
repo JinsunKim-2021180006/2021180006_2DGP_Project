@@ -1,6 +1,6 @@
 from pico2d import *
 import game_framework
-from character_move import Knight
+from Knight import Knight
 
 
 MAP_SIZE_width = 1270
