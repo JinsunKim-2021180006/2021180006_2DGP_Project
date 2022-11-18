@@ -8,6 +8,7 @@ class Arena:
         if Arena.image == None:
             self.image = load_image('resource\\background_image_sprites\\Colosseum_Arena.png')
         self.x,self.y = x,y
+        self.colli_y = 120
     def update(self):
         pass
     

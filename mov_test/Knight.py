@@ -4,10 +4,9 @@ import game_world
 import arenaOn_state
 
 RD, LD, RU, LU,\
-SPACE, FALL,\
-LAND_I, LAND_M= range(8)
+SPACE, FALL = range(6)
 
-event_name = ['RD', 'LD', 'RU', 'LU', 'SPACE', 'FALL', 'LAND_I', 'LAND_M']
+event_name = ['RD', 'LD', 'RU', 'LU', 'SPACE', 'FALL']
 
 PIXEL_PER_METER = (10.0 / 0.4) # 10 pixel 30 cm
 RUN_SPEED_KMPH = 25.0 # Km / Hour
@@ -38,18 +37,20 @@ class IDLE:
     def enter(self,event):
         print('ENTER IDLE')
         self.dir = 0
+        self.dir_y = -1
 
     @staticmethod
     def exit(self, event):
         print('EXIT IDLE')
-        if events == SPACE:
-            self.air_mov = False
 
 
     @staticmethod
     def do(self):
-        if not self.colli:
-            self.add_event(FALL)
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 1
+
+        self.y += self.dir_y * GRAVITY_PPS * game_framework.frame_time*2
+        self.y = clamp(120,self.y,800)
+
 
     @staticmethod
     def draw(self):
@@ -72,14 +73,15 @@ class MOVING:
             self.dir -= 1
         elif event == LU:
             self.dir += 1
+
+                
         
     def exit(self, event):
         print('EXIT RUN')
         self.face_dir = self.dir
         self.dir = 0
 
-        if event == SPACE:
-            self.air_move = True
+
 
     def do(self):
         # print(f'{self.speed*self.dir*game_framework.frame_time}')
@@ -100,29 +102,31 @@ class JUMP:
     
     def enter(self, event):
         print('ENTER JUMP')
+        self.timer = 0.0
         self.dir = 0
-        if self.jumping == False:
-            self.jumping = True
-            if event == SPACE:
+        if event == SPACE:
+            if not self.is_jump:
                 self.dir_y += 2
-            
-                
+
+        self.is_jump = True
+
     def exit(self, event):
         print('EXIT JUMP')
         self.dir = 0
-
+        self.is_jump = False
 
     def do(self):
+        self.timer += game_framework.frame_time
+
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 9
         self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time
-        self.y += self.dir_y * GRAVITY_PPS * game_framework.frame_time
         self.x = clamp(0, self.x, 1270)
-        
+       
+        self.y += self.dir_y * GRAVITY_PPS * game_framework.frame_time *2
+       
+        if self.timer >= 0.2:
+            self.add_event(FALL)
 
-        if self.y == jump:
-            self.jumping= True
-
-        jump = self.y+80
         pass
 
     def draw(self):
@@ -131,30 +135,15 @@ class JUMP:
         else:
             self.image.clip_composite_draw(int(self.frame)*80,100*4,80,100,0,'h',self.x,self.y,80,100)
 
+   
 
-class FALLING:
-    
-    def enter(self, event):
-        print('ENTER JUMP')
-                
-    def exit(self, event):
-        print('EXIT JUMP')
+        
 
 
-    def do(self):
-        pass
-
-    def draw(self):
-        pass
-
-
-    
 next_state = {
-    IDLE:  {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, SPACE:JUMP,FALL:FALLING},
-    MOVING:   {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE, SPACE:JUMP, FALL:FALLING},
-    JUMP : {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, SPACE:JUMP, FALL:FALLING},
-    FALLING: {RU: FALLING,  LU: FALLING,  RD: FALLING,  LD: FALLING, SPACE:FALLING, FALL:IDLE, 
-                LAND_I: IDLE, LAND_M: MOVING}
+    IDLE:  {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, SPACE:JUMP},
+    MOVING:   {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE, SPACE:JUMP},
+    JUMP : {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, SPACE:IDLE,FALL:IDLE}
 }
 
 
@@ -164,13 +153,10 @@ class Knight:
         self.x, self.y = 100, 120
         self.frame = 0
         self.dir, self.face_dir = 0, 1
+        self.dir_y = -1
 
-        self.vel = 0
-        self.colli = True #바닥에 닿았는지 확인
-
-        self.air_mov =False
-        self.timer = 0
-        self.jump_y = 0.0
+        self.timer = 0.0
+        self.is_jump = False
 
         self.image = load_image('resource\\character_image_sprites\\knight_resource2.png')
 
@@ -192,7 +178,7 @@ class Knight:
 
     def draw(self):
         self.cur_state.draw(self)
-        if  arenaOn_state.coliBox:
+        if arenaOn_state.coliBox:
             draw_rectangle(*self.get_bb())
 
     def add_event(self, event):
@@ -207,5 +193,8 @@ class Knight:
         return self.x - 20, self.y - 30, self.x + 20, self.y + 50
 
     def handle_collision(self, other, group):
-        if group == 'knight:ground':
-            self.colli = False
+        if not group == 'knight:ground':
+            self.is_jump = True
+        else:
+            self.is_jump = False
+        pass
