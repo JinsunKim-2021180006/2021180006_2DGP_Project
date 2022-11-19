@@ -10,7 +10,6 @@ from enemy import Enemy2, Enemy1
 from Block import Block, Wall
 from GUI import HP
 
-
 MAP_SIZE_width = 1270
 MAP_SIZE_height = 720
 
@@ -57,11 +56,12 @@ def enter():
     background_img = Arena(MAP_SIZE_width,MAP_SIZE_height)
     game_world.add_obj(background_img,0)
     
-    block = [Block(randint(200,1000),randint(300,600)) for n in range(3)]
+
+    setPlatform()
     wall = Wall(-5,1100)
-    game_world.add_objs(block, 0)
     game_world.add_obj(wall, 0)
 
+    knight.GUI()
 
     game_world.add_collision_group(knight,background_img,'knight:ground')
     game_world.add_collision_group(knight,block,'knight:ground')
@@ -70,6 +70,9 @@ def enter():
     game_world.add_collision_group(enemy2,block,'enemy2:ground')
 
     game_world.add_collision_group(enemy1,knight,'enemy1:obj')
+
+    game_world.add_collision_group(knight,enemy1,'knight:enemy')
+    game_world.add_collision_group(knight,enemy2,'knight:enemy')
    
     pass
 
@@ -117,4 +120,18 @@ def pause():
 
 def resume():
     pass
+
+def setPlatform():
+    
+    block_list = [80,190,300,410,520,630,740,850,960,1070,1180,1290]
+    
+    i = 0
+    for i in range(12):
+        block = [Block(block_list[i],250) for n in range(1)]
+        game_world.add_objs(block, 0)
+
+
+    for i in range(12):
+        block = [Block(block_list[i],550)]
+        game_world.add_objs(block, 0)
 
