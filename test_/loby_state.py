@@ -91,7 +91,7 @@ def update():
         if BG_state == 2:
             #만약 아레나 안쪽으로 들어온다면 -> arenaOn_state
             knight.dir = 0
-            game_framework.push_state(arenaOn_state)
+            game_framework.change_state(arenaOn_state)
             pass
 
         
