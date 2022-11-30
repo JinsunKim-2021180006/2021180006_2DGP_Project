@@ -7,7 +7,8 @@ class Block:
     def __init__(self,x,y):
         if Block.image == None:
             self.image = load_image('resource\\GUI_image\\platform.png')
-        self.x,self.y = x,y
+        self.x,self.y = x, y
+        
     def update(self):
         pass
         
@@ -21,6 +22,7 @@ class Block:
 
     def handle_collision(self, other, group):
         pass
+
 
 class Wall:
     image = None

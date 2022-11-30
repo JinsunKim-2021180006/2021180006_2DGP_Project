@@ -1,13 +1,14 @@
 from pico2d import *
+from pico2d import *
 import game_framework
 import game_world
-import loby_state
 import arenaOn_state
+import GUI
 
-RD, LD, RU, LU, SHIFT, SHIFT_U,\
-SPACE, SPACE_U = range(8)
+RD, LD, RU, LU, ATK, ATK_U,\
+DASH, SHOOT= range(8)
 
-event_name = ['RD', 'LD', 'RU', 'LU', 'SHIFT', 'SHIFT_U', 'SPACE', 'SPACE_U']
+event_name = ['RD', 'LD', 'RU', 'LU', 'FALL', 'ATK', 'SHOOT']
 
 PIXEL_PER_METER = (10.0 / 0.4) # 10 pixel 30 cm
 RUN_SPEED_KMPH = 25.0 # Km / Hour
@@ -27,12 +28,13 @@ key_event_table = {
     (SDL_KEYDOWN, SDLK_LEFT): LD,
     (SDL_KEYUP, SDLK_RIGHT): RU,
     (SDL_KEYUP, SDLK_LEFT): LU,
+    
+    (SDL_KEYDOWN,SDLK_x) : ATK,
+    (SDL_KEYUP,SDLK_x) : ATK_U,
 
-    (SDL_KEYDOWN,SDLK_LSHIFT): SHIFT,
-    (SDL_KEYUP,SDLK_LSHIFT): SHIFT_U,
+    (SDL_KEYDOWN,SDLK_LSHIFT): DASH,
+    (SDL_KEYDOWN, SDLK_z): SHOOT
 
-    (SDL_KEYDOWN,SDLK_SPACE):SPACE,
-    (SDL_KEYUP,SDLK_SPACE): SPACE_U
 }
 
 
@@ -47,16 +49,13 @@ class IDLE:
     @staticmethod
     def exit(self, event):
         print('EXIT IDLE')
+        if event == SHOOT:
+            self.Shoot_()
 
 
     @staticmethod
     def do(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 1
-
-        self.y += self.dir_y * GRAVITY_PPS * game_framework.frame_time
-        self.y = clamp(120,self.y,800)
-
-
 
     @staticmethod
     def draw(self):
@@ -86,6 +85,8 @@ class MOVING:
         print('EXIT RUN')
         self.face_dir = self.dir
         self.dir = 0
+        if event == SHOOT:
+            self.Shoot_()
 
 
 
@@ -104,46 +105,35 @@ class MOVING:
             self.image.clip_composite_draw(int(self.frame)*80,100*4,80,100,0,'',self.x,self.y,80,100)
 
 
-class JUMP:
-    
+class ATTACK:
+        
     def enter(self, event):
-        print('ENTER JUMP')
-        self.dir = 0
-        if event == SPACE:
-            self.dir_y += 2
-        elif event == SPACE_U:
-            self.dir_y -= 2
-
-                
+        print('ENTER ATK')
+        self.atk_timer = 0.0
+        
+       
     def exit(self, event):
-        print('EXIT JUMP')
-        self.dir = 0
-
+        print('EXIT ATK')
 
 
     def do(self):
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 9
-        self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time
-        self.y += self.dir_y * GRAVITY_PPS * game_framework.frame_time
-        self.x = clamp(0, self.x, 1270)
-        self.y = clamp(120,self.y,250)
+        self.atk_timer += game_framework.frame_time
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 7
         pass
 
     def draw(self):
         if self.face_dir == 1:
-            self.image.clip_composite_draw(int(self.frame)*80,100*4,80,100,0,'',self.x,self.y,80,100)
+            self.image.clip_composite_draw(int(self.frame)*80,100*2,80,100,0,'',self.x,self.y,80,100)
         else:
-            self.image.clip_composite_draw(int(self.frame)*80,100*4,80,100,0,'h',self.x,self.y,80,100)
-
-   
+            self.image.clip_composite_draw(int(self.frame)*80,100*2,80,100,0,'h',self.x,self.y,80,100)
 
         
 
 
 next_state = {
-    IDLE:  {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, SHIFT:MOVING,SHIFT_U:MOVING,SPACE:JUMP},
-    MOVING:   {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE, SHIFT: IDLE,SHIFT_U: IDLE, SPACE:JUMP},
-    JUMP : {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, SHIFT:MOVING, SHIFT_U:MOVING, SPACE:IDLE, SPACE_U:IDLE}
+    IDLE:  {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING,ATK:ATTACK, SHOOT:IDLE},
+    MOVING:   {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE, ATK:ATTACK, SHOOT: MOVING},
+    ATTACK: {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, ATK:ATTACK, ATK_U:IDLE, SHOOT:IDLE}
 }
 
 
@@ -153,10 +143,14 @@ class Knight:
         self.x, self.y = 100, 120
         self.frame = 0
         self.dir, self.face_dir = 0, 1
-        self.dir_y = 0
+        self.dir_y = -1
 
-        self.jumping = False
-        self.timer = 0
+        self.timer = 0.0
+        self.is_jump = False
+
+        self.HP = 5
+
+        self.atk_timer = 0.0
 
         self.image = load_image('resource\\character_image_sprites\\knight_resource2.png')
 
@@ -167,18 +161,19 @@ class Knight:
     def update(self):
         self.cur_state.do(self)
 
+
         if self.event_que:
             event = self.event_que.pop()
             self.cur_state.exit(self, event)
             try:
                 self.cur_state = next_state[self.cur_state][event]
             except KeyError:
-                print(f'ERROR: State {self.cur_state.__name__}    Event {event_name[event]}')
+                print(f'ERROR')
             self.cur_state.enter(self, event)
 
     def draw(self):
         self.cur_state.draw(self)
-        if loby_state.coliBox | arenaOn_state.coliBox:
+        if arenaOn_state.coliBox:
             draw_rectangle(*self.get_bb())
 
     def add_event(self, event):
@@ -193,8 +188,21 @@ class Knight:
         return self.x - 20, self.y - 30, self.x + 20, self.y + 50
 
     def handle_collision(self, other, group):
-        if group == 'knight:ground':
-            if self.jumping:
-                self.jumping = False
-            else:
-                self.jumping = True
+        if group == 'knight:enemy':
+            print("damage")
+            self.HP -=1
+        pass
+
+
+
+    def GUI(self):
+        HP_list = [25,60,95,130,165]
+
+        for i in range(self.HP):
+            hp = [GUI.HP(HP_list[i],680)]
+            game_world.add_objs(hp, 1)
+    
+    def Shoot_(self):
+        print("shoot")
+        spirit = GUI.Shoot(self.x,self.y,self.face_dir*12)
+        game_world.add_obj(spirit,1)
