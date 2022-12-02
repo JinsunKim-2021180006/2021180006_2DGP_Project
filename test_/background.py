@@ -34,7 +34,7 @@ class Hall:
     
     def draw(self):
         self.image.draw(self.x//2,self.y//2)
-        if loby_state.coliBox:
+        if loby_state.coliBox | arena_state.coliBox:
             draw_rectangle(*self.get_bb())
 
     def get_bb(self):
@@ -54,7 +54,7 @@ class Loby:
         
     def draw(self):
         self.image.draw(self.x//2,self.y//2)
-        if loby_state.coliBox:
+        if loby_state.coliBox | arena_state.coliBox:
             draw_rectangle(*self.get_bb())
 
     def get_bb(self):

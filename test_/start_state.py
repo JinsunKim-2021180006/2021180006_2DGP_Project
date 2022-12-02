@@ -1,5 +1,3 @@
-#스타팅 페이지
-
 from pico2d import *
 import loby_state
 import game_framework

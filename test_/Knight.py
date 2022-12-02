@@ -1,14 +1,13 @@
 from pico2d import *
-from pico2d import *
 import game_framework
 import game_world
 import arena_state
 import GUI
 
 RD, LD, RU, LU, ATK, ATK_U,\
-DASH, SHOOT= range(8)
+SHOOT= range(7)
 
-event_name = ['RD', 'LD', 'RU', 'LU', 'FALL', 'ATK', 'SHOOT']
+event_name = ['RD', 'LD', 'RU', 'LU', 'ATK', 'SHOOT']
 
 PIXEL_PER_METER = (10.0 / 0.4) # 10 pixel 30 cm
 RUN_SPEED_KMPH = 25.0 # Km / Hour
@@ -20,9 +19,6 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 9
 
-GRAVITY_MPS = 9.8
-GRAVITY_PPS = (GRAVITY_MPS * PIXEL_PER_METER)
-
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RD,
     (SDL_KEYDOWN, SDLK_LEFT): LD,
@@ -32,7 +28,6 @@ key_event_table = {
     (SDL_KEYDOWN,SDLK_x) : ATK,
     (SDL_KEYUP,SDLK_x) : ATK_U,
 
-    (SDL_KEYDOWN,SDLK_LSHIFT): DASH,
     (SDL_KEYDOWN, SDLK_z): SHOOT
 
 }
@@ -44,7 +39,6 @@ class IDLE:
     def enter(self,event):
         print('ENTER IDLE')
         self.dir = 0
-        self.dir_y = -1
 
     @staticmethod
     def exit(self, event):
@@ -68,7 +62,6 @@ class IDLE:
 class MOVING:
 
     def enter(self, event):
-        self.dir = 0
         print('ENTER RUN')
         if event == RD:
             self.dir += 1
@@ -84,19 +77,15 @@ class MOVING:
     def exit(self, event):
         print('EXIT RUN')
         self.face_dir = self.dir
-        self.dir = 0
         if event == SHOOT:
             self.Shoot_()
 
 
-
     def do(self):
-        # print(f'{self.speed*self.dir*game_framework.frame_time}')
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 9
         self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time
-        self.y += self.dir_y * GRAVITY_PPS * game_framework.frame_time
         self.x = clamp(0, self.x, 1270)
-        self.y = clamp(120,self.y,150)
+
 
     def draw(self):
         if self.dir == -1:
@@ -131,9 +120,9 @@ class ATTACK:
 
 
 next_state = {
-    IDLE:  {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING,ATK:ATTACK, SHOOT:IDLE},
-    MOVING:   {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE, ATK:ATTACK, SHOOT: MOVING},
-    ATTACK: {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, ATK:ATTACK, ATK_U:IDLE, SHOOT:IDLE}
+    IDLE:  {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, ATK:ATTACK, SHOOT:IDLE},
+    MOVING:   {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE, ATK:ATTACK, SHOOT:MOVING},
+    ATTACK: {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, ATK:ATTACK, ATK_U:IDLE}
 }
 
 
@@ -143,13 +132,8 @@ class Knight:
         self.x, self.y = 100, 120
         self.frame = 0
         self.dir, self.face_dir = 0, 1
-        self.dir_y = -1
-
-        self.timer = 0.0
-        self.is_jump = False
 
         self.HP = 5
-
         self.atk_timer = 0.0
 
         self.image = load_image('resource\\character_image_sprites\\knight_resource2.png')
@@ -160,7 +144,6 @@ class Knight:
 
     def update(self):
         self.cur_state.do(self)
-
 
         if self.event_que:
             event = self.event_que.pop()
@@ -192,8 +175,6 @@ class Knight:
             print("damage")
             self.HP -=1
         pass
-
-
 
     def GUI(self):
         HP_list = [25,60,95,130,165]

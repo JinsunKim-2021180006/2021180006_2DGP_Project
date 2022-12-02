@@ -35,7 +35,7 @@ class MP:
 class Shoot:
     image = None
 
-    def __init__(self,x = 800,y=120,velo=1):
+    def __init__(self,x,y,velo):
         if MP.image == None:
             self.image = load_image('resource\\character_image_sprites\\Spirit_Icon.png')
             self.x,self.y = x, y
