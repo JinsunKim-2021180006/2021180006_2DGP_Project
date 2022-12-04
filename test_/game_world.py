@@ -37,7 +37,7 @@ def add_collision_group(a,b, group):
         else:
             collision_group[group][0].append(a)
 
-    if b: 
+    if b:   
         if type(b) == list:
             collision_group[group][1] += b
         else:

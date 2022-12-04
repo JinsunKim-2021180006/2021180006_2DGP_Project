@@ -7,7 +7,7 @@ import GUI
 RD, LD, RU, LU, ATK, ATK_U,\
 SHOOT_KEY= range(7)
 
-event_name = ['RD', 'LD', 'RU', 'LU', 'ATK', 'SHOOT']
+event_name = ['RD', 'LD', 'RU', 'LU', 'ATK', 'atk_u','SHOOT']
 
 PIXEL_PER_METER = (10.0 / 0.4) # 10 pixel 30 cm
 RUN_SPEED_KMPH = 25.0 # Km / Hour
@@ -36,8 +36,9 @@ class IDLE:
     @staticmethod
     def enter(self,event):
         self.atkChk = False
+        self.anmiCnt = 1
         self.dir = 0
-
+ 
     @staticmethod
     def exit(self, event):
         if event == SHOOT_KEY:
@@ -45,6 +46,8 @@ class IDLE:
         if event == ATK:
             self.atkChk = True
             self.atk_range = 30
+            self.frameNum = 2
+            self.anmiCnt = 7
             self.Attack()
         if event ==ATK_U:
             self.atkChk = False
@@ -86,6 +89,8 @@ class MOVING:
         if event == ATK:
             self.atkChk = True
             self.atk_range = 30
+            self.anmiCnt = 7
+            self.frameNum = 2
             self.Attack()
         if event ==ATK_U:
             self.atkChk = False
@@ -125,7 +130,7 @@ class Knight:
         self.hp_cnt = 5
         self.mp = 3
 
-
+        self.atkimg = None
         self.atk_range = 0
         self.atkChk = False
 
@@ -146,7 +151,7 @@ class Knight:
             try:
                 self.cur_state = next_state[self.cur_state][event]
             except KeyError:
-                print(f'ERROR')
+                print(f'ERROR: State {self.cur_state.__name__}    Event {event_name[event]}')
             self.cur_state.enter(self, event)
 
     def draw(self):
@@ -196,6 +201,6 @@ class Knight:
         game_world.add_obj(self.spirit,1)
     
     def Attack(self):
-        self.frameNum = 2
-        self.anmiCnt = 7
+        self.atkimg = GUI.ATTACK_WING(self.x,self.y,self.face_dir*1)
+        game_world.add_obj(self.atkimg,1)
         pass

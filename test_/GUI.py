@@ -1,6 +1,7 @@
 from pico2d import *
 import arena_state
 import game_world
+import game_framework
 
 class HP:
     image = None
@@ -13,9 +14,9 @@ class HP:
     def update(self):
         pass
 
-    # def handle_collision(self, other, group):
-    #     if group == 'knight:enemy':
-    #         game_world.remove_obj(self)
+    def handle_collision(self, other, group):
+        if group == 'knight:enemy':
+            game_world.remove_obj(self)
            
     def draw(self):
         self.image.draw(self.x,self.y)
@@ -74,6 +75,7 @@ class ATTACK_WING:
     image = None
 
     def __init__(self,x,y,velo):
+        self.timer = 0
         if MP.image == None:
             self.image = load_image('resource\\character_image_sprites\\Attack_Icon.png')
             self.x,self.y = x, y
@@ -84,22 +86,22 @@ class ATTACK_WING:
             draw_rectangle(*self.get_bb())
         
         if self.velo <=0:
-            self.image.clip_composite_draw(0,0,115,72,0,'',self.x,self.y,110,67)
+            self.image.clip_composite_draw(0,0,127,277,0,'h',self.x-40,self.y,42,92)
         else:
-            self.image.clip_composite_draw(0,0,115,72,0,'h',self.x,self.y,110,67)
+            self.image.clip_composite_draw(0,0,127,277,0,'',self.x+40,self.y,42,92)
     
 
     def update(self):
-        pass
+        self.timer += 0.5
 
-    def handle_collision(self,other,group):
-        if group == 'spirit:enemy':
-            print('hit')
+        if self.timer == 10:
             game_world.remove_obj(self)
         pass
 
-
+    def handle_collision(self,other,group):
+        pass
+    
     def get_bb(self):
-        return self.x -30, self.y - 50, self.x + 30, self.y + 50
+        return self.x, self.y, self.x, self.y
 
  

@@ -1,6 +1,7 @@
 import random
 from pico2d import *
 import game_framework
+import game_world
 import arena_state
 
 PIXEL_PER_METER = (10.0 / 0.4) # 10 pixel 30 cm
@@ -35,6 +36,7 @@ class Enemy1:
     def __init__(self):
         self.frame = 0
         self.dir = 1
+        self.hp = 3
 
         self.colli = False
         if Enemy1.image == None:
@@ -60,6 +62,8 @@ class Enemy1:
             self.colli = False
             self.dir = -self.dir
 
+        if self.hp == 0:
+            game_world.remove_obj(self)
 
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 3
         self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time
@@ -70,8 +74,9 @@ class Enemy1:
     def handle_collision(self, other, group):
         if group == 'knight:enemy':
             self.colli = True
-            pass
-        pass
+            if arena_state.knight.atkChk:
+                self.hp -= 1
+            
 
 
 
