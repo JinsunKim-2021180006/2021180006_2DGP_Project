@@ -5,7 +5,7 @@ import arena_state
 import GUI
 
 RD, LD, RU, LU, ATK, ATK_U,\
-SHOOT= range(7)
+SHOOT_KEY= range(7)
 
 event_name = ['RD', 'LD', 'RU', 'LU', 'ATK', 'SHOOT']
 
@@ -28,41 +28,47 @@ key_event_table = {
     (SDL_KEYDOWN,SDLK_x) : ATK,
     (SDL_KEYUP,SDLK_x) : ATK_U,
 
-    (SDL_KEYDOWN, SDLK_z): SHOOT
+    (SDL_KEYDOWN, SDLK_z): SHOOT_KEY
 
 }
 
-
-#2 : 상태의 정의
 class IDLE:
     @staticmethod
     def enter(self,event):
-        print('ENTER IDLE')
+        self.atkChk = False
         self.dir = 0
 
     @staticmethod
     def exit(self, event):
-        print('EXIT IDLE')
-        if event == SHOOT:
-            self.Shoot_()
-
+        if event == SHOOT_KEY:
+            self.Shoot()
+        if event == ATK:
+            self.atkChk = True
+            self.atk_range = 30
+            self.Attack()
+        if event ==ATK_U:
+            self.atkChk = False
+            self.atk_range = 0
+            self.anmiCnt = 1
+            self.frameNum = 4
 
     @staticmethod
     def do(self):
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 1
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % self.anmiCnt
 
     @staticmethod
     def draw(self):
         if self.face_dir == 1:
-            self.image.clip_composite_draw(int(self.frame)*80,100*4,80,100,0,'',self.x,self.y,80,100)
+            self.image.clip_composite_draw(int(self.frame)*80,100*self.frameNum,80,100,0,'',self.x,self.y,80,100)
         else:
-            self.image.clip_composite_draw(int(self.frame)*80,100*4,80,100,0,'h',self.x,self.y,80,100)
-
+            self.image.clip_composite_draw(int(self.frame)*80,100*self.frameNum,80,100,0,'h',self.x,self.y,80,100)
 
 class MOVING:
 
     def enter(self, event):
-        print('ENTER RUN')
+        self.anmiCnt = 9
+        self.frameNum = 4
+        self.atkChk = False
         if event == RD:
             self.dir += 1
         elif event == LD:
@@ -72,57 +78,37 @@ class MOVING:
         elif event == LU:
             self.dir += 1
 
-                
-        
     def exit(self, event):
-        print('EXIT RUN')
         self.face_dir = self.dir
-        if event == SHOOT:
-            self.Shoot_()
-
+        if event == SHOOT_KEY:
+            self.Shoot()
+        
+        if event == ATK:
+            self.atkChk = True
+            self.atk_range = 30
+            self.Attack()
+        if event ==ATK_U:
+            self.atkChk = False
+            self.atk_range = 0
+            self.anmiCnt = 9
+            self.frameNum = 4
 
     def do(self):
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 9
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % self.anmiCnt
         self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time
         self.x = clamp(0, self.x, 1270)
 
 
     def draw(self):
         if self.dir == -1:
-            self.image.clip_composite_draw(int(self.frame)*80,100*4,80,100,0,'h',self.x,self.y,80,100)
+            self.image.clip_composite_draw(int(self.frame)*80,100*self.frameNum,80,100,0,'h',self.x,self.y,80,100)
         elif self.dir == 1:
-            self.image.clip_composite_draw(int(self.frame)*80,100*4,80,100,0,'',self.x,self.y,80,100)
-
-
-class ATTACK:
-        
-    def enter(self, event):
-        print('ENTER ATK')
-        self.atk_timer = 0.0
-        
-       
-    def exit(self, event):
-        print('EXIT ATK')
-
-
-    def do(self):
-        self.atk_timer += game_framework.frame_time
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 7
-        pass
-
-    def draw(self):
-        if self.face_dir == 1:
-            self.image.clip_composite_draw(int(self.frame)*80,100*2,80,100,0,'',self.x,self.y,80,100)
-        else:
-            self.image.clip_composite_draw(int(self.frame)*80,100*2,80,100,0,'h',self.x,self.y,80,100)
-
-        
+            self.image.clip_composite_draw(int(self.frame)*80,100*self.frameNum,80,100,0,'',self.x,self.y,80,100)
 
 
 next_state = {
-    IDLE:  {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, ATK:ATTACK, SHOOT:IDLE},
-    MOVING:   {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE, ATK:ATTACK, SHOOT:MOVING},
-    ATTACK: {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, ATK:ATTACK, ATK_U:IDLE}
+    IDLE:  {RU: MOVING,  LU: MOVING,  RD: MOVING,  LD: MOVING, ATK:IDLE, SHOOT_KEY:IDLE},
+    MOVING:   {RU: IDLE, LU: IDLE, RD: IDLE, LD: IDLE, ATK:MOVING, SHOOT_KEY:MOVING},
 }
 
 
@@ -132,9 +118,18 @@ class Knight:
         self.x, self.y = 100, 120
         self.frame = 0
         self.dir, self.face_dir = 0, 1
+        self.frameNum = 4
+        self.anmiCnt = 1
+        
+        self.hp = None
+        self.hp_cnt = 5
+        self.mp = 3
 
-        self.HP = 5
-        self.atk_timer = 0.0
+
+        self.atk_range = 0
+        self.atkChk = False
+
+        self.spirit = []
 
         self.image = load_image('resource\\character_image_sprites\\knight_resource2.png')
 
@@ -167,23 +162,40 @@ class Knight:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
 
+    #=============================================================================
+    #충돌체크 용
     def get_bb(self):
-        return self.x - 20, self.y - 30, self.x + 20, self.y + 50
+        if self.face_dir == 1:
+            return self.x - 20, self.y - 30, self.x + self.atk_range + 20, self.y + 50
+        elif self.face_dir == -1:
+            return self.x - self.atk_range - 20, self.y - 30, self.x + 20, self.y + 50
+            
+
 
     def handle_collision(self, other, group):
         if group == 'knight:enemy':
-            print("damage")
-            self.HP -=1
+            pass
         pass
+    #=============================================================================
+    def Gui(self):
+        HP_list = [30,65,100,135,170]
+        for i in range(5):
+            self.hp = [GUI.HP(HP_list[i],680)]
+            game_world.add_objs(self.hp, 1)
 
-    def GUI(self):
-        HP_list = [25,60,95,130,165]
+        mp_list = [30,65,100]
+        for j in range(self.mp):
+            mp = [GUI.MP(mp_list[j],630)]
+            game_world.add_objs(mp, 1)
 
-        for i in range(self.HP):
-            hp = [GUI.HP(HP_list[i],680)]
-            game_world.add_objs(hp, 1)
     
-    def Shoot_(self):
-        print("shoot")
-        spirit = GUI.Shoot(self.x,self.y,self.face_dir*12)
-        game_world.add_obj(spirit,1)
+    #=============================================================================
+    # 공격 함수들
+    def Shoot(self):
+        self.spirit = GUI.SHOOT(self.x,self.y,self.face_dir*12)
+        game_world.add_obj(self.spirit,1)
+    
+    def Attack(self):
+        self.frameNum = 2
+        self.anmiCnt = 7
+        pass

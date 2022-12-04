@@ -58,7 +58,7 @@ class Enemy1:
             self.dir = 1
         elif self.colli:
             self.colli = False
-            self.dir =- self.dir
+            self.dir = -self.dir
 
 
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 3
@@ -68,7 +68,7 @@ class Enemy1:
         return self.x - 15, self.y - 15, self.x + 15, self.y + 15
 
     def handle_collision(self, other, group):
-        if group == 'enemy1:obj':
+        if group == 'knight:enemy':
             self.colli = True
             pass
         pass
@@ -122,7 +122,4 @@ class Enemy2:
         return self.x - 35, self.y - 35, self.x + 35, self.y + 35
 
     def handle_collision(self, other, group):
-        if group == 'enemy2:ground':
-            self.colli = True
-            pass
         pass

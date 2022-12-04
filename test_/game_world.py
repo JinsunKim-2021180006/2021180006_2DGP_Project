@@ -1,5 +1,3 @@
-#game world 
-
 obj = [[],[]]
 collision_group = dict()
 
@@ -31,7 +29,6 @@ def clear():
 
 def add_collision_group(a,b, group):
     if group not in collision_group:
-        print('New Group Made')
         collision_group[group] = [[],[]]
 
     if a:
@@ -40,7 +37,7 @@ def add_collision_group(a,b, group):
         else:
             collision_group[group][0].append(a)
 
-    if b:
+    if b: 
         if type(b) == list:
             collision_group[group][1] += b
         else:
