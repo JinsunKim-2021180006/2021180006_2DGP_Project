@@ -46,7 +46,7 @@ def enter():
     background_img = Loby(MAP_SIZE_width,MAP_SIZE_height)
 
     bgm = load_music('resource\\sound\\loby_bgm.mp3')
-    bgm.set_volume(40)
+    bgm.set_volume(60)
     bgm.repeat_play()
 
     game_world.add_obj(knight,1)

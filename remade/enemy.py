@@ -1,22 +1,7 @@
 import random
 from pico2d import *
 import game_framework
-import arena_state
-
-PIXEL_PER_METER = (10.0 / 0.4) # 10 pixel 30 cm
-RUN_SPEED_KMPH = 30.0 # Km / Hour
-RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
-RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
-RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
-
-TIME_PER_ACTION = 0.5
-ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAMES_PER_ACTION = 9
-
-
-import random
-from pico2d import *
-import game_framework
+import game_world
 import arena_state
 
 PIXEL_PER_METER = (10.0 / 0.4) # 10 pixel 30 cm
@@ -35,6 +20,7 @@ class Enemy1:
     def __init__(self):
         self.frame = 0
         self.dir = 1
+        self.hp = 3
 
         self.colli = False
         if Enemy1.image == None:
@@ -58,8 +44,10 @@ class Enemy1:
             self.dir = 1
         elif self.colli:
             self.colli = False
-            self.dir =- self.dir
+            self.dir = -self.dir
 
+        if self.hp == 0:
+            game_world.remove_obj(self)
 
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 3
         self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time
@@ -68,10 +56,11 @@ class Enemy1:
         return self.x - 15, self.y - 15, self.x + 15, self.y + 15
 
     def handle_collision(self, other, group):
-        if group == 'enemy1:obj':
+        if group == 'knight:enemy':
             self.colli = True
-            pass
-        pass
+            if arena_state.knight.atkChk:
+                self.hp -= 1
+            
 
 
 
@@ -122,7 +111,40 @@ class Enemy2:
         return self.x - 35, self.y - 35, self.x + 35, self.y + 35
 
     def handle_collision(self, other, group):
-        if group == 'enemy2:ground':
-            self.colli = True
-            pass
+        pass
+
+
+class Boss:
+    image = None
+    def __init__(self):
+        self.frame = 0
+
+        self.dir = 1
+        self.dir_y = 1
+        
+        self.colli = False
+        if self.image == None:
+            self.image = load_image('resource\\character_image_sprites\\Boss1_resource.png')
+        self.x, self.y = 750,500
+        
+
+    def draw(self):
+        if self.dir == -1:
+            self.image.clip_composite_draw(int(self.frame)*50,50*7,80,50,0,'h',self.x,self.y,80,100)
+        else:
+            self.image.clip_composite_draw(int(self.frame)*50,50*7,80,50,0,'',self.x,self.y,80,100)
+
+
+        if arena_state.coliBox:
+            draw_rectangle(*self.get_bb())
+
+    def update(self):
+        
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % 7
+
+
+    def get_bb(self):
+        return self.x - 35, self.y - 35, self.x + 35, self.y + 35
+
+    def handle_collision(self, other, group):
         pass

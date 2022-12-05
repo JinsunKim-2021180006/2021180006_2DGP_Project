@@ -10,7 +10,7 @@ from enemy import Enemy2, Enemy1, Boss
 from Block import Block, Wall
 import GUI
 
-from source import knight,enemy1,enemy2,boss
+from source import knight,enemy1,enemy2,boss,spirit
 
 MAP_SIZE_width = 1270
 MAP_SIZE_height = 720
@@ -19,7 +19,6 @@ hp = None
 
 block = None
 wall = None
-background_img = None
 
 coliBox = False
 
@@ -41,8 +40,7 @@ def handle_events():
 
 
 def enter():
-    global knight, enemy2, enemy1 ,background_img, block, wall,\
-        arena_bgm
+    global knight, enemy2, enemy1 ,background_img, block, wall,spirit
     
 
     knight = Knight()
@@ -69,8 +67,8 @@ def enter():
     game_world.add_collision_group(knight,background_img,'knight:ground')
     game_world.add_collision_group(knight,block,'knight:ground')
 
-    game_world.add_collision_group(knight.spirit,enemy1, 'spirit:enemy')
-    game_world.add_collision_group(knight.spirit,enemy2, 'spirit:enemy')
+    game_world.add_collision_group(spirit,enemy1, 'spirit:enemy')
+    game_world.add_collision_group(spirit,enemy2, 'spirit:enemy')
 
     game_world.add_collision_group(knight,enemy1,'knight:enemy')
     game_world.add_collision_group(knight,enemy2,'knight:enemy')

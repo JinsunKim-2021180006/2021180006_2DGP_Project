@@ -2,13 +2,20 @@ from pico2d import *
 import loby_state
 import arena_state
 
+bgm = None
+
 class Arena:
     image = None
     
     def __init__(self,x,y):
+        global bgm
         if Arena.image == None:
             self.image = load_image('resource\\background_image_sprites\\Colosseum_Arena.png')
         self.x,self.y = x,y
+
+        bgm = load_music('resource\\sound\\arena_bgm.mp3')
+        bgm.set_volume(230)
+        bgm.repeat_play()
     def update(self):
         pass
     

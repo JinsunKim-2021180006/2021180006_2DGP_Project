@@ -4,6 +4,7 @@ import game_world
 import arena_state
 import loby_state
 import GUI
+import source
 
 RD, LD, RU, LU, ATK, ATK_U,\
 SHOOT_KEY= range(7)
@@ -140,8 +141,6 @@ class Knight:
         self.atk_range = 0
         self.atkChk = False
 
-        self.spirit = []
-
         self.image = load_image('resource\\character_image_sprites\\knight_resource2.png')
         shoot_sound = load_wav('resource\\sound\\knight_shoot.wav')
         shoot_sound.set_volume(20)
@@ -207,9 +206,8 @@ class Knight:
     #=============================================================================
     # 공격 함수들
     def Shoot(self):
-        
-        self.spirit = GUI.SHOOT(self.x,self.y,self.face_dir*12)
-        game_world.add_obj(self.spirit,1)
+        source.spirit = GUI.SHOOT(self.x,self.y,self.face_dir*12)
+        game_world.add_obj(source.spirit,1)
     
     def Attack(self):
         shoot_sound.play()

@@ -103,5 +103,3 @@ class ATTACK_WING:
     
     def get_bb(self):
         return self.x, self.y, self.x, self.y
-
- 

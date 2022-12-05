@@ -6,21 +6,19 @@ import game_world
 
 from background import Arena
 from Knight import Knight
-from enemy import Enemy2, Enemy1
+from enemy import Enemy2, Enemy1, Boss
 from Block import Block, Wall
-from GUI import HP
+import GUI
+
+from source import knight,enemy1,enemy2,boss,spirit
 
 MAP_SIZE_width = 1270
 MAP_SIZE_height = 720
 
-knight = None
-enemy1 = None
-enemy2 = None
 hp = None
 
 block = None
 wall = None
-background_img = None
 
 coliBox = False
 
@@ -42,16 +40,19 @@ def handle_events():
 
 
 def enter():
-    global knight, enemy2 ,background_img, block, wall
-    print("enter loby state")
+    global knight, enemy2, enemy1 ,background_img, block, wall,spirit
     
+
     knight = Knight()
     game_world.add_obj(knight,1)
     
-    enemy2 = [Enemy2() for n in range(2)]
+    enemy2 = [Enemy2() for n in range(1)]
     game_world.add_objs(enemy2,1)
-    enemy1 = [Enemy1() for n in range(3)]
+    enemy1 = [Enemy1() for n in range(1)]
     game_world.add_objs(enemy1,1)
+
+    boss = Boss()
+    game_world.add_obj(boss,1)
 
     background_img = Arena(MAP_SIZE_width,MAP_SIZE_height)
     game_world.add_obj(background_img,0)
@@ -61,15 +62,13 @@ def enter():
     wall = Wall(-5,1100)
     game_world.add_obj(wall, 0)
 
-    knight.GUI()
+    knight.Gui()
 
     game_world.add_collision_group(knight,background_img,'knight:ground')
     game_world.add_collision_group(knight,block,'knight:ground')
 
-    game_world.add_collision_group(enemy2,background_img,'enemy2:ground')
-    game_world.add_collision_group(enemy2,block,'enemy2:ground')
-
-    game_world.add_collision_group(enemy1,knight,'enemy1:obj')
+    game_world.add_collision_group(spirit,enemy1, 'spirit:enemy')
+    game_world.add_collision_group(spirit,enemy2, 'spirit:enemy')
 
     game_world.add_collision_group(knight,enemy1,'knight:enemy')
     game_world.add_collision_group(knight,enemy2,'knight:enemy')
@@ -85,9 +84,8 @@ def update():
 
     for game_obj in game_world.all_objs():
         game_obj.update()
-        
-
-    for a,b, group in game_world.all_collision_pairs():
+    game_framework
+    for a,b,group in game_world.all_collision_pairs():
         if collide(a, b):
             a.handle_collision(b, group)
             b.handle_collision(a, group)
