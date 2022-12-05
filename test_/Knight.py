@@ -2,6 +2,7 @@ from pico2d import *
 import game_framework
 import game_world
 import arena_state
+import loby_state
 import GUI
 
 RD, LD, RU, LU, ATK, ATK_U,\
@@ -18,6 +19,8 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 9
+
+shoot_sound = None
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RD,
@@ -99,6 +102,8 @@ class MOVING:
             self.frameNum = 4
 
     def do(self):
+        global shoot_sound
+
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME *game_framework.frame_time) % self.anmiCnt
         self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time
         self.x = clamp(0, self.x, 1270)
@@ -120,6 +125,7 @@ next_state = {
 class Knight:
 
     def __init__(self):
+        global shoot_sound
         self.x, self.y = 100, 120
         self.frame = 0
         self.dir, self.face_dir = 0, 1
@@ -137,6 +143,10 @@ class Knight:
         self.spirit = []
 
         self.image = load_image('resource\\character_image_sprites\\knight_resource2.png')
+        shoot_sound = load_wav('resource\\sound\\knight_shoot.wav')
+        shoot_sound.set_volume(20)
+
+
 
         self.event_que = []
         self.cur_state = IDLE
@@ -156,7 +166,7 @@ class Knight:
 
     def draw(self):
         self.cur_state.draw(self)
-        if arena_state.coliBox:
+        if arena_state.coliBox | loby_state.coliBox:
             draw_rectangle(*self.get_bb())
 
     def add_event(self, event):
@@ -197,10 +207,12 @@ class Knight:
     #=============================================================================
     # 공격 함수들
     def Shoot(self):
+        
         self.spirit = GUI.SHOOT(self.x,self.y,self.face_dir*12)
         game_world.add_obj(self.spirit,1)
     
     def Attack(self):
+        shoot_sound.play()
         self.atkimg = GUI.ATTACK_WING(self.x,self.y,self.face_dir*1)
         game_world.add_obj(self.atkimg,1)
         pass

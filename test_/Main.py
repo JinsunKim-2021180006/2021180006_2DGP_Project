@@ -15,7 +15,6 @@ state = [
 
  
 pico2d.open_canvas(1270,720)
-game_framework.run(state[0])
+game_framework.run(state[1])
 pico2d.close_canvas()
-
 

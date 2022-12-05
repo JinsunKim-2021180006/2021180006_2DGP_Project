@@ -11,6 +11,7 @@ MAP_SIZE_width = 1270
 MAP_SIZE_height = 720
 
 knight = None
+bgm = None
 
 # 0 = loby, 1 = hall, 2 = arena
 BG_state = 0
@@ -39,10 +40,14 @@ def handle_events():
 
 
 def enter():
-    global knight, background_img
+    global knight, background_img,bgm
     print("enter loby state")
     knight = Knight()
     background_img = Loby(MAP_SIZE_width,MAP_SIZE_height)
+
+    bgm = load_music('resource\\sound\\loby_bgm.mp3')
+    bgm.set_volume(40)
+    bgm.repeat_play()
 
     game_world.add_obj(knight,1)
     game_world.add_obj(background_img,0)

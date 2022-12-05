@@ -6,16 +6,15 @@ import game_world
 
 from background import Arena
 from Knight import Knight
-from enemy import Enemy2, Enemy1
+from enemy import Enemy2, Enemy1, Boss
 from Block import Block, Wall
 import GUI
+
+from source import knight,enemy1,enemy2,boss
 
 MAP_SIZE_width = 1270
 MAP_SIZE_height = 720
 
-knight = None
-enemy1 = None
-enemy2 = None
 hp = None
 
 block = None
@@ -42,9 +41,10 @@ def handle_events():
 
 
 def enter():
-    global knight, enemy2 ,background_img, block, wall
-    print("enter loby state")
+    global knight, enemy2, enemy1 ,background_img, block, wall,\
+        arena_bgm
     
+
     knight = Knight()
     game_world.add_obj(knight,1)
     
@@ -52,6 +52,9 @@ def enter():
     game_world.add_objs(enemy2,1)
     enemy1 = [Enemy1() for n in range(1)]
     game_world.add_objs(enemy1,1)
+
+    boss = Boss()
+    game_world.add_obj(boss,1)
 
     background_img = Arena(MAP_SIZE_width,MAP_SIZE_height)
     game_world.add_obj(background_img,0)
