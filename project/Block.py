@@ -1,5 +1,5 @@
 from pico2d import *
-import arenaOn_state
+import arena_state
 
 class Block:
     image = None
@@ -14,7 +14,7 @@ class Block:
         
     def draw(self):
         self.image.clip_draw(0,0,345,120,self.x,self.y,138,48)
-        if arenaOn_state.coliBox:
+        if arena_state.coliBox:
             draw_rectangle(*self.get_bb())
 
     def get_bb(self):
@@ -38,7 +38,7 @@ class Wall:
         
     def draw(self):
         self.image.clip_draw(0,0,120,1200,self.x,self.y,60,1000)
-        if arenaOn_state.coliBox:
+        if arena_state.coliBox:
             draw_rectangle(*self.get_bb())
 
     def get_bb(self):

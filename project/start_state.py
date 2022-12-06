@@ -1,14 +1,15 @@
-#스타팅 페이지
-
 from pico2d import *
-import loby_state
+import play_state
 import game_framework
 
 stating_image = None
+stating_sound = None
 
 def enter():
-    global starting_image
+    global starting_image, stating_sound
     starting_image = load_image('resource\\background_image_sprites\\Colosseum_of_Fools_Trophy.png')
+    stating_sound = load_wav('resource\\sound\\start_state.wav')
+    stating_sound.set_volume(32)
     pass
 
 def exit():
@@ -17,12 +18,15 @@ def exit():
     pass
 
 def handle_events():
+    global stating_sound
     events = get_events()
 
     for event in events:
         if event.type == SDL_KEYDOWN:
             if event.key == SDLK_s:
-                game_framework.change_state(loby_state)
+                stating_sound.play()
+                delay(1.5)
+                game_framework.change_state(play_state)
             if event.key == SDLK_ESCAPE:
                 game_framework.quit()
         
